@@ -1,0 +1,88 @@
+@layer base {
+  html {
+    color-scheme: light;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    line-height: var(--text-base--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: var(--header-h);
+  }
+
+  body {
+    font-size: var(--text-base);
+    font-weight: 400;
+  }
+
+  /* Tailwind v4 defaults borders to currentColor; use the hairline instead */
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--line);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  ::selection {
+    background-color: var(--ink);
+    color: var(--paper);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  input,
+  select,
+  textarea {
+    border-radius: 0;
+  }
+
+  /* Prevent iOS zoom on focus: form controls must be >= 16px on small screens */
+  @media (width < 48rem) {
+    input,
+    select,
+    textarea {
+      font-size: max(16px, 1em);
+    }
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

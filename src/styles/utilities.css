@@ -1,0 +1,307 @@
+/*
+ * Reusable primitives. Declared with @utility so they work with variants
+ * (md:btn-block, hover:link, ...) and sort correctly against Tailwind classes.
+ */
+
+/* ---------- Typography ---------- */
+
+/* Small uppercase UI label: nav items, buttons, eyebrows, filters */
+@utility text-label {
+  font-size: var(--text-2xs);
+  line-height: var(--text-2xs--line-height);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* Hero / campaign headline — fluid, light, tight */
+@utility text-display {
+  font-size: clamp(2.25rem, 1.25rem + 4vw, 5.5rem);
+  line-height: 1.04;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Page and section headings */
+@utility text-heading {
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Product names, card titles */
+@utility text-title {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  font-weight: 400;
+}
+
+/* Prices and other tabular figures */
+@utility text-price {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Containers & rhythm ---------- */
+
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility container-content {
+  width: 100%;
+  max-width: calc(var(--container-content) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility container-prose {
+  width: 100%;
+  max-width: calc(var(--container-prose) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Cancel the gutter of the parent container (edge-to-edge media on mobile) */
+@utility bleed-x {
+  margin-inline: calc(var(--gutter) * -1);
+}
+
+@utility section-y {
+  padding-block: var(--section-y);
+}
+
+/* ---------- Buttons ---------- */
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding-inline: 2rem;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-size: var(--text-2xs);
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  user-select: none;
+  transition-property: color, background-color, border-color, opacity;
+  transition-duration: var(--default-transition-duration);
+  transition-timing-function: var(--ease-luxe);
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Solid: the one primary action per view (add to bag, checkout) */
+@utility btn-primary {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--paper);
+      color: var(--ink);
+    }
+  }
+}
+
+/* Outline: secondary actions; inverts to solid on hover */
+@utility btn-secondary {
+  background-color: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+  }
+}
+
+/* Text-only action with hover underline */
+@utility btn-ghost {
+  background-color: transparent;
+  padding-inline: 0;
+  min-height: 2.75rem;
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  text-decoration-color: transparent;
+  transition-property: text-decoration-color;
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+@utility btn-sm {
+  min-height: 2.5rem;
+  padding-inline: 1.25rem;
+}
+
+@utility btn-lg {
+  min-height: 3.5rem;
+  padding-inline: 2.5rem;
+}
+
+@utility btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* Square icon button (bag, search, close) — 44px touch target */
+@utility btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: var(--ink);
+  transition-property: opacity;
+  transition-duration: var(--default-transition-duration);
+
+  @media (hover: hover) {
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+}
+
+/* ---------- Links ---------- */
+
+/* Inline link inside copy: always underlined, underline fades on hover */
+@utility link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: currentColor;
+  transition-property: text-decoration-color, color;
+  transition-duration: var(--default-transition-duration);
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration-color: transparent;
+    }
+  }
+}
+
+/* Navigation / quiet link: no underline until hover or current page */
+@utility link-reveal {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  text-decoration-color: transparent;
+  transition-property: text-decoration-color;
+  transition-duration: var(--default-transition-duration);
+
+  &[aria-current="page"] {
+    text-decoration-color: currentColor;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+/* ---------- Layout primitives ---------- */
+
+/* Product listing: 2 → 3 → 4 columns, tight columns, airy rows */
+@utility grid-products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--grid-gap-x);
+  row-gap: var(--grid-gap-y);
+
+  @media (width >= 48rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (width >= 80rem) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Editorial split: stacked on mobile, image | text from md */
+@utility grid-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--grid-gap-y) var(--grid-gap-x);
+
+  @media (width >= 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Horizontal snap rail for carousels / product shelves on touch screens */
+@utility rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 70%;
+  gap: var(--grid-gap-x);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  padding-inline: var(--gutter);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * {
+    scroll-snap-align: start;
+  }
+
+  @media (width >= 48rem) {
+    grid-auto-columns: 40%;
+  }
+
+  @media (width >= 64rem) {
+    grid-auto-columns: calc((100% - var(--grid-gap-x) * 3) / 4);
+  }
+}
+
+/* Image well: grey ground behind product shots, crops children */
+@utility media-frame {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--surface);
+}
+
+@utility media-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

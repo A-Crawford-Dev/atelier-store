@@ -1,0 +1,142 @@
+/*
+ * Design tokens.
+ *
+ * Raw values live on :root so they can be re-scoped (see theme-inverse);
+ * @theme inline exposes them to Tailwind as utilities (bg-ink, text-muted,
+ * border-line, px-gutter, aspect-product, ...).
+ *
+ * Tailwind's default color, radius and shadow scales are removed on purpose:
+ * the palette is monochrome, corners are square and surfaces are flat.
+ */
+
+:root {
+  /* Palette — monochrome, one restrained accent */
+  --ink: #000000;
+  --paper: #ffffff;
+  --surface: #f5f5f5; /* image wells, product tiles */
+  --surface-strong: #ebebeb; /* hover / pressed surfaces */
+  --muted: #6f6f6f; /* secondary text, AA on paper and surface */
+  --subtle: #a3a3a3; /* placeholders, disabled — not for body text */
+  --line: #e2e2e2; /* hairlines, dividers */
+  --line-strong: #000000; /* input + outline-button borders */
+  --accent: #6e1423; /* sparing: badges, sale, small highlights */
+  --danger: #b00020;
+  --success: #1e6b3a;
+
+  /* Fluid page gutter and vertical rhythm */
+  --gutter: 1rem;
+  --section-y: 3rem;
+  --grid-gap-x: 0.5rem;
+  --grid-gap-y: 2rem;
+  --header-h: 3.5rem;
+}
+
+@media (width >= 48rem) {
+  :root {
+    --gutter: 1.5rem;
+    --section-y: 4.5rem;
+    --grid-gap-x: 0.75rem;
+    --grid-gap-y: 2.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --gutter: 2.5rem;
+    --section-y: 6rem;
+    --grid-gap-x: 1rem;
+    --grid-gap-y: 3rem;
+    --header-h: 4.5rem;
+  }
+}
+
+/*
+ * Inverted scope: swaps the palette for everything inside. Sets text color but
+ * no background, so it also works for text and buttons laid over imagery —
+ * add `bg-paper` for a solid black band.
+ */
+@utility theme-inverse {
+  --ink: #ffffff;
+  --paper: #000000;
+  --surface: #141414;
+  --surface-strong: #1f1f1f;
+  --muted: #a3a3a3;
+  --subtle: #6f6f6f;
+  --line: #2e2e2e;
+  --line-strong: #ffffff;
+  color: var(--ink);
+}
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+
+  --radius-full: 9999px; /* swatches, dots only */
+
+  --breakpoint-3xl: 120rem;
+
+  --container-page: 120rem; /* 1920px: edge-to-edge chrome and grids */
+  --container-content: 80rem; /* 1280px: editorial blocks */
+  --container-prose: 40rem; /* 640px: long-form text, forms */
+
+  --aspect-product: 4 / 5;
+  --aspect-editorial: 3 / 4;
+  --aspect-hero: 16 / 9;
+  --aspect-hero-mobile: 4 / 5;
+
+  --tracking-label: 0.12em;
+  --tracking-tight: -0.015em;
+
+  --ease-luxe: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --default-transition-duration: 250ms;
+  --default-transition-timing-function: var(--ease-luxe);
+
+  /*
+   * Type scale. UI chrome sits at 11–13px; body at 15px; headings stay
+   * regular weight and get presence from size, not boldness.
+   */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.875rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 2.25rem;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 2.75rem;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 3.25rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --spacing-gutter: var(--gutter);
+  --spacing-section: var(--section-y);
+  --spacing-header: var(--header-h);
+}
