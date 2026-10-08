@@ -12,7 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "auth:generate": "npx auth@latest generate --config src/lib/auth.ts --output src/db/auth-schema.ts",
+    "auth:generate": "auth generate --config src/lib/auth.ts --output src/db/auth-schema.ts",
     "db:seed": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/db/seed.ts"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "auth": "1.7.7",
     "dotenv": "^18.0.6",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
