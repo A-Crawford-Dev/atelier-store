@@ -1,11 +1,19 @@
-// Seeds the catalog with the sample categories and products. Idempotent: categories and
-// products are upserted by slug, images are replaced, and stock is reset to these values.
+// Seeds the catalog with the sample categories, products and collections. Idempotent:
+// categories, products and collections are upserted by slug, images and collection
+// memberships are replaced, and stock is reset to these values.
 // Run with `npm run db:seed` after `npm run db:migrate`.
 
 import { getTableColumns, inArray, sql, type SQL } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import { db } from "@/db";
-import { categories, productImages, products, productStock } from "@/db/schema";
+import {
+  categories,
+  collectionProducts,
+  collections,
+  productImages,
+  products,
+  productStock,
+} from "@/db/schema";
 import { unsplash, type Img } from "@/lib/images";
 
 type SeedCategory = { slug: string; title: string; image: Img };
@@ -289,6 +297,44 @@ const seedProducts: SeedProduct[] = [
   },
 ];
 
+type SeedCollection = { slug: string; title: string; description: string; products: string[] };
+
+// Product order here is the merchandising order on the collection page
+const seedCollections: SeedCollection[] = [
+  {
+    slug: "women",
+    title: "Women",
+    description:
+      "Structured leather goods, considered outerwear and finishing touches in gold — the women’s collection for the season.",
+    products: [
+      "grained-leather-top-handle-bag",
+      "waxed-leather-tote",
+      "chevron-chain-shoulder-bag",
+      "washed-silk-bomber",
+      "pebbled-leather-pump",
+      "sculpted-gold-hoops",
+    ],
+  },
+  {
+    slug: "men",
+    title: "Men",
+    description:
+      "Supple leather outerwear, Goodyear-welted shoes and an everyday tote, cut to be worn for years.",
+    products: ["lambskin-biker-jacket", "washed-silk-bomber", "suede-wingtip-brogue", "waxed-leather-tote"],
+  },
+  {
+    slug: "gifts",
+    title: "Gifts",
+    description: "Pieces chosen to be given and kept — wrapped by hand in our signature box.",
+    products: [
+      "sculpted-gold-hoops",
+      "chevron-chain-shoulder-bag",
+      "grained-leather-top-handle-bag",
+      "waxed-leather-tote",
+    ],
+  },
+];
+
 /** `SET` clause that overwrites every column except the given keys with the incoming row */
 function excludedExcept<T extends PgTable>(table: T, keep: string[]) {
   const set: Record<string, SQL> = {};
@@ -347,7 +393,29 @@ async function main() {
     .returning({ id: products.id, slug: products.slug });
 
   const productIds = new Map(productRows.map((row) => [row.slug, row.id]));
-  const idFor = (slug: string) => productIds.get(slug)!;
+  const idFor = (slug: string) => {
+    const id = productIds.get(slug);
+    if (!id) throw new Error(`Unknown product "${slug}"`);
+    return id;
+  };
+
+  const collectionRows = await db
+    .insert(collections)
+    .values(
+      seedCollections.map((collection, i) => ({
+        slug: collection.slug,
+        title: collection.title,
+        description: collection.description,
+        sortOrder: i,
+      })),
+    )
+    .onConflictDoUpdate({
+      target: collections.slug,
+      set: { ...excludedExcept(collections, ["id", "slug", "createdAt"]), updatedAt: sql`now()` },
+    })
+    .returning({ id: collections.id, slug: collections.slug });
+
+  const collectionIds = new Map(collectionRows.map((row) => [row.slug, row.id]));
 
   // neon-http has no interactive transactions; a batch runs as one transaction
   await db.batch([
@@ -371,9 +439,23 @@ async function main() {
         target: productStock.productId,
         set: { quantity: sql`excluded.quantity`, updatedAt: sql`now()` },
       }),
+    db
+      .delete(collectionProducts)
+      .where(inArray(collectionProducts.collectionId, [...collectionIds.values()])),
+    db.insert(collectionProducts).values(
+      seedCollections.flatMap((collection) =>
+        collection.products.map((slug, position) => ({
+          collectionId: collectionIds.get(collection.slug)!,
+          productId: idFor(slug),
+          position,
+        })),
+      ),
+    ),
   ]);
 
-  console.log(`Seeded ${categoryRows.length} categories and ${productRows.length} products.`);
+  console.log(
+    `Seeded ${categoryRows.length} categories, ${productRows.length} products and ${collectionRows.length} collections.`,
+  );
 }
 
 main().catch((error) => {

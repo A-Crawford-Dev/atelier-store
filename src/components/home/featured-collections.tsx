@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { featuredCollections } from "@/lib/catalog";
+import { collectionHref } from "@/lib/routes";
 
 export function FeaturedCollections() {
   return (
@@ -8,7 +9,7 @@ export function FeaturedCollections() {
       {featuredCollections.map((collection) => (
         <Link
           key={collection.slug}
-          href={`/${collection.slug}`}
+          href={collectionHref(collection.slug)}
           className="group media-frame relative block aspect-editorial md:aspect-[4/5] xl:aspect-square"
         >
           <Image

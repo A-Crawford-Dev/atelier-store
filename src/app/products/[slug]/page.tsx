@@ -6,6 +6,7 @@ import { Disclosure } from "@/components/product/disclosure";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { StockIndicator } from "@/components/product/stock-indicator";
 import { ProductGrid } from "@/components/product-grid";
+import { categoryHref } from "@/lib/routes";
 import {
   CURRENCY,
   formatPrice,
@@ -80,7 +81,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[slug
           <div className="flex flex-col gap-8 lg:sticky lg:top-[calc(var(--header-h)+2.5rem)]">
             <header className="flex flex-col gap-3">
               <Link
-                href={`/${product.category.slug}`}
+                href={categoryHref(product.category.slug)}
                 className="text-label link-reveal self-start text-muted"
               >
                 {product.category.title}

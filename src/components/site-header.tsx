@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BagIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NavLinks } from "@/components/nav-links";
 import { navigation } from "@/lib/catalog";
 
 export function SiteHeader() {
@@ -18,13 +19,7 @@ export function SiteHeader() {
             <MobileMenu items={navigation} />
             <nav aria-label="Main" className="hidden lg:block">
               <ul className="flex gap-6 xl:gap-8">
-                {navigation.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className="text-label link-reveal">
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+                <NavLinks items={navigation} linkClassName="text-label link-reveal" />
               </ul>
             </nav>
           </div>

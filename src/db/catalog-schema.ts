@@ -1,4 +1,4 @@
-// Catalog tables: categories, products, product images and stock.
+// Catalog tables: categories, products, product images, stock and merchandised collections.
 // Prices are integer minor units (cents); currency is the app-level CURRENCY constant.
 
 import { relations, sql } from "drizzle-orm";
@@ -8,6 +8,7 @@ import {
   index,
   integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -88,6 +89,49 @@ export const productStock = pgTable(
   (t) => [check("product_stock_quantity_nonnegative", sql`${t.quantity} >= 0`)],
 );
 
+/**
+ * Merchandised collections (Women, Men, Gifts…). Unlike categories, a product
+ * can belong to any number of collections.
+ */
+export const collections = pgTable("collections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  ...timestamps,
+});
+
+export const collectionProducts = pgTable(
+  "collection_products",
+  {
+    collectionId: uuid("collection_id")
+      .notNull()
+      .references(() => collections.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    /** Merchandising order within the collection */
+    position: integer("position").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.collectionId, t.productId] }),
+    index("collection_products_product_id_idx").on(t.productId),
+  ],
+);
+
+export const collectionsRelations = relations(collections, ({ many }) => ({
+  products: many(collectionProducts),
+}));
+
+export const collectionProductsRelations = relations(collectionProducts, ({ one }) => ({
+  collection: one(collections, {
+    fields: [collectionProducts.collectionId],
+    references: [collections.id],
+  }),
+  product: one(products, { fields: [collectionProducts.productId], references: [products.id] }),
+}));
+
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
@@ -96,6 +140,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, { fields: [products.categoryId], references: [categories.id] }),
   images: many(productImages),
   stock: one(productStock),
+  collections: many(collectionProducts),
 }));
 
 export const productImagesRelations = relations(productImages, ({ one }) => ({

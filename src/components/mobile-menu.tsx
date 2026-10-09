@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { CloseIcon, MenuIcon } from "@/components/icons";
+import { NavLinks } from "@/components/nav-links";
 
 type NavItem = { label: string; href: string };
 
@@ -44,13 +45,11 @@ export function MobileMenu({ items }: { items: NavItem[] }) {
 
         <nav aria-label="Mobile" className="container-page flex-1 overflow-y-auto py-6">
           <ul>
-            {items.map((item) => (
-              <li key={item.href} className="border-b border-line">
-                <Link href={item.href} className="block py-4 text-xl">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            <NavLinks
+              items={items}
+              itemClassName="border-b border-line"
+              linkClassName="link-reveal block py-4 text-xl"
+            />
           </ul>
           <div className="mt-8 flex flex-col gap-4">
             <Link href="/account" className="text-label link-reveal">

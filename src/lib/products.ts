@@ -1,10 +1,17 @@
 // Product catalog, read from Postgres. Accessors are cached ("use cache") and tagged
 // "products" so writes can refresh them with revalidateTag("products").
 
-import { asc, desc, eq, ne, sql } from "drizzle-orm";
+import { asc, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
-import { categories, productImages, products, productStock } from "@/db/schema";
+import {
+  categories,
+  collectionProducts,
+  collections,
+  productImages,
+  products,
+  productStock,
+} from "@/db/schema";
 import type { Img } from "@/lib/images";
 
 export type Product = {
@@ -103,6 +110,54 @@ export async function getNewArrivals(limit = 8): Promise<Product[]> {
     limit,
   });
   return rows.map(toProduct);
+}
+
+/** Every product flagged as new, newest first — the full New Arrivals listing */
+export async function getNewInProducts(): Promise<Product[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("products");
+
+  const rows = await db.query.products.findMany({
+    with: withRelations,
+    where: eq(products.isNew, true),
+    orderBy: [desc(products.createdAt), asc(products.sku)],
+  });
+  return rows.map(toProduct);
+}
+
+/** All products in a category, new pieces first, then newest */
+export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("products");
+
+  const rows = await db.query.products.findMany({
+    with: withRelations,
+    where: inArray(
+      products.categoryId,
+      db.select({ id: categories.id }).from(categories).where(eq(categories.slug, categorySlug)),
+    ),
+    orderBy: [desc(products.isNew), desc(products.createdAt), asc(products.sku)],
+  });
+  return rows.map(toProduct);
+}
+
+/** Products in a merchandised collection, in the collection's own order */
+export async function getProductsByCollection(collectionSlug: string): Promise<Product[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("products");
+
+  const rows = await db.query.collectionProducts.findMany({
+    where: inArray(
+      collectionProducts.collectionId,
+      db.select({ id: collections.id }).from(collections).where(eq(collections.slug, collectionSlug)),
+    ),
+    orderBy: [asc(collectionProducts.position)],
+    with: { product: { with: withRelations } },
+  });
+  return rows.map((row) => toProduct(row.product));
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {

@@ -2,6 +2,7 @@
 // live in the database (see products.ts and categories.ts).
 
 import { unsplash, type Img } from "@/lib/images";
+import { categoryHref, collectionHref } from "@/lib/routes";
 
 export type Collection = {
   slug: string;
@@ -12,12 +13,12 @@ export type Collection = {
 
 export const navigation = [
   { label: "New In", href: "/new" },
-  { label: "Women", href: "/women" },
-  { label: "Men", href: "/men" },
-  { label: "Bags", href: "/bags" },
-  { label: "Shoes", href: "/shoes" },
-  { label: "Jewelry", href: "/jewelry" },
-  { label: "Gifts", href: "/gifts" },
+  { label: "Women", href: collectionHref("women") },
+  { label: "Men", href: collectionHref("men") },
+  { label: "Bags", href: categoryHref("bags") },
+  { label: "Shoes", href: categoryHref("shoes") },
+  { label: "Jewelry", href: categoryHref("jewelry") },
+  { label: "Gifts", href: collectionHref("gifts") },
 ];
 
 export const hero = {
@@ -29,8 +30,8 @@ export const hero = {
     alt: "Woman in a burgundy wool coat and dark glasses carrying shopping bags",
   },
   actions: [
-    { label: "Shop Women", href: "/women" },
-    { label: "Shop Men", href: "/men" },
+    { label: "Shop Women", href: collectionHref("women") },
+    { label: "Shop Men", href: collectionHref("men") },
   ],
 };
 
@@ -69,7 +70,7 @@ export const editorial = {
 export const campaign = {
   eyebrow: "Men’s Tailoring",
   title: "Sharper by Design",
-  cta: { label: "Shop Tailoring", href: "/men/tailoring" },
+  cta: { label: "Shop Men", href: collectionHref("men") },
   images: [
     {
       src: unsplash("1617137968427-85924c800a22", 1400),
